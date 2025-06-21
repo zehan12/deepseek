@@ -1,6 +1,6 @@
 import { images } from "@/assets/images";
 import { useClerkAuth } from "@/hooks";
-import { cn } from "@/lib/utils";
+import { cn } from "@/libs/utils";
 import { UserButton } from "@clerk/nextjs";
 import Image from "next/image";
 import { FC, memo, useMemo, useState } from "react";
