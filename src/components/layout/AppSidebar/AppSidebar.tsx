@@ -1,36 +1,72 @@
 import { images } from "@/assets/images";
+import { useClerkAuth } from "@/hooks";
 import { cn } from "@/lib/utils";
+import { UserButton } from "@clerk/nextjs";
 import Image from "next/image";
-import { FC, memo } from "react";
+import { FC, memo, useMemo, useState } from "react";
+import { ChatLabel } from "./ChatLabels";
 
 interface AppSidebar {
     expand: boolean;
     setExpand: (state: boolean) => void;
 }
 
+export function getSidebarAssets(expand: boolean) {
+    return {
+        logoSrc: expand ? images.logo_text : images.logo_icon,
+        logoAlt: "DeepSeek logo",
+
+        sidebarIconSrc: expand ? images.sidebar_close_icon : images.sidebar_icon,
+        sidebarIconAlt: expand ? "Close sidebar" : "Open sidebar",
+
+        chatIconSrc: expand ? images.chat_icon : images.chat_icon_dull,
+        chatIconAlt: expand ? "New chat" : "New chat (inactive)",
+
+        phoneIconSrc: expand ? images.phone_icon : images.phone_icon_dull,
+        phoneIconAlt: "Get DeepSeek app",
+
+        menuIconSrc: images.menu_icon,
+        menuIconAlt: "Open menu",
+
+        profileAlt: "User profile",
+        qrcodeAlt: "QR code to download DeepSeek app",
+    };
+}
+
 export const AppSidebar: FC<AppSidebar> = memo(({ expand, setExpand }) => {
+
+    const { user, openSignIn } = useClerkAuth();
+    const [openActionMenu, setOpenActionMenu] = useState<{ id: number, open: boolean }>({ id: 0, open: false });
+
+    const handleActionMenu = (state: boolean) => {
+        // setOpenActionMenu(state);
+    }
+
+    const assets = useMemo(() => getSidebarAssets(expand), [expand]);
+
+
     return (<>
-        <div className={cn("flex flex-col justify-between bg-[#212327] pt-7 transition-all z-50 max-md:absolute max-md:h-screen",
+        <aside className={cn("flex flex-col justify-between bg-[#212327] pt-7 transition-all z-50 max-md:absolute max-md:h-screen",
             expand ? 'p-4 w-64' : 'md:w-20  w-0 max-md:overflow-hidden'
         )}>
             <div>
                 <div className={cn('flex', expand ? 'flex-row gap-10' : 'flex-col items-center gap-8')}>
                     <Image
                         className={cn(expand ? 'w-36' : 'w-10')}
-                        src={expand ? images.logo_text : images.logo_icon}
-                        alt="logo"
+                        src={assets.logoSrc}
+                        alt={assets.logoAlt}
                     />
                     <div
-                        onClick={() => expand ? setExpand(false) : setExpand(true)}
+                        onClick={() => setExpand(!expand)}
                         className="group relative flex items-center justify-center hover:bg-gray-500/20 transition-all duration-300 h-9 w-9 aspect-square rounded-lg cursor-pointer">
                         <Image
-                            src={images.menu_icon}
-                            alt="menu_icon"
+                            src={assets.menuIconSrc}
+                            alt={assets.menuIconAlt}
                             className="md:hidden"
                         />
                         <Image
-                            src={expand ? images.sidebar_close_icon : images.sidebar_icon}
-                            alt={expand ? "sidebar_close_icon" : "sidebar_icon"}
+                            src={assets.sidebarIconSrc}
+                            alt={assets.sidebarIconAlt}
                             className="hidden md:block w-7"
                         />
                         <div className={cn("absolute w-max",
@@ -50,8 +86,8 @@ export const AppSidebar: FC<AppSidebar> = memo(({ expand, setExpand }) => {
                 )}>
                     <Image
                         className={expand ? 'w-6' : 'w-7'}
-                        src={expand ? images.chat_icon : images.chat_icon_dull}
-                        alt={expand ? "chat_icon" : "chat_icon_dull"}
+                        src={assets.chatIconSrc}
+                        alt={assets.chatIconAlt}
                     />
                     <div className="absolute w-max -top-12 -right-12 opacity-0 group-hover:opacity-100 transition bg-black text-white text-sm px-3 py-2 rounded-lg shadow-lg pointer-events-none">
                         New Chat
@@ -66,6 +102,7 @@ export const AppSidebar: FC<AppSidebar> = memo(({ expand, setExpand }) => {
                     <p className="my-1">
                         Recents
                     </p>
+                    <ChatLabel openMenu={openActionMenu} setOpenMenu={handleActionMenu} />
                 </div>
             </div>
 
@@ -76,8 +113,8 @@ export const AppSidebar: FC<AppSidebar> = memo(({ expand, setExpand }) => {
                 )}>
                     <Image
                         className={cn(expand ? "w-5" : "w-6.5 mx-auto")}
-                        src={expand ? images.phone_icon : images.phone_icon_dull}
-                        alt={expand ? "phone_icon" : "phone_icon_dull"}
+                        src={assets.phoneIconSrc}
+                        alt={assets.phoneIconAlt}
                     />
                     <div className={cn("absolute -top-60 pb-8",
                         !expand && "-right-40",
@@ -87,7 +124,7 @@ export const AppSidebar: FC<AppSidebar> = memo(({ expand, setExpand }) => {
                             <Image
                                 className="w-44"
                                 src={images.qrcode}
-                                alt="qrcode_icon"
+                                alt={assets.qrcodeAlt}
                             />
                             <p>Scan to get DeepSeek App</p>
                             <div className={cn("w-3 h-3 absolute bg-black rotate-45 -bottom-1.5",
@@ -108,20 +145,26 @@ export const AppSidebar: FC<AppSidebar> = memo(({ expand, setExpand }) => {
                         </>
                     )}
                 </div>
-                <div className={cn("flex items-center",
-                    expand ? "hover:bg-white/10 rounded-lg"
-                        : "justify-center w-full",
-                    "gap-3 text-sm text-white/50 p-2 mt-2 cursor-pointer"
-                )}>
-                    <Image
-                        className="w-7"
-                        src={images.profile_icon}
-                        alt="profile"
-                    />
+                <div
+                    onClick={() => user ? null : openSignIn()}
+                    className={cn("flex items-center",
+                        expand ? "hover:bg-white/10 rounded-lg"
+                            : "justify-center w-full",
+                        "gap-3 text-sm text-white/50 p-2 mt-2 cursor-pointer"
+                    )}>
+                    {
+                        user ? (<UserButton />) : (
+                            <Image
+                                className="w-7"
+                                src={images.profile_icon}
+                                alt={assets.profileAlt}
+                            />
+                        )
+                    }
                     {expand && <span>My Profile</span>}
                 </div>
             </div>
-        </div>
+        </aside>
     </>)
 })
 

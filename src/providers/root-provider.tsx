@@ -1,9 +1,12 @@
 "use client";
 
+import { ClerkProvider } from "@clerk/nextjs";
 import { ReactNode } from "react"
 
 export const RootProvider = ({ children }: { children: ReactNode }) => {
     return (<>
-        {children}
+        <ClerkProvider>
+            {children}
+        </ClerkProvider>
     </>)
 }
