@@ -22,6 +22,12 @@ export default function RootLayout({
   return (
     <RootProvider>
       <html lang="en" suppressHydrationWarning>
+        <head suppressHydrationWarning>
+          {/* <script
+            crossOrigin="anonymous"
+            src="//unpkg.com/react-scan/dist/auto.global.js"
+          /> */}
+        </head>
         <body
           className={`${inter.className} antialiased`}
         >

@@ -39,6 +39,7 @@ export const AppSidebar: FC<AppSidebar> = memo(({ expand, setExpand }) => {
     const [openActionMenu, setOpenActionMenu] = useState<{ id: number, open: boolean }>({ id: 0, open: false });
 
     const handleActionMenu = (state: boolean) => {
+        console.log(state,setOpenActionMenu)
         // setOpenActionMenu(state);
     }
 

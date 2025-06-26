@@ -17,6 +17,8 @@ export const PromptBox: FC<PromptBoxProps> = memo(({ isLoading, setLoading }) =>
         setPrompt(e.target.value)
     }
 
+    console.log(isLoading, setLoading);
+
     return (<>
         <form className={cn("w-full",
             false ? "max-w-3xl" : "max-w-2xl",
