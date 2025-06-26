@@ -32,6 +32,7 @@ export async function POST(request: Request) {
         image: evt?.data.image_url
     };
 
+    console.log(userData,evt,"both evnt and data")
     await connectDB();
 
     switch (evt?.type) {
