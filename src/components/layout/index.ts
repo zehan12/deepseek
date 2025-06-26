@@ -1,1 +1,1 @@
-export * from "./AppSidebar/AppSidebar";
+export { AppSidebar } from "./AppSidebar/AppSidebar";
