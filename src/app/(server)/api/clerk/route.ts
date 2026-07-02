@@ -19,7 +19,6 @@ export async function POST(request: Request) {
         "svix-timestamp": headerPayload.get("svix-timestamp"),
         "svix-signature": headerPayload.get("svix-signature")
     };
-    console.log(wh);
 
     const payload = await request.json();
     const body = JSON.stringify(payload);
@@ -32,7 +31,6 @@ export async function POST(request: Request) {
         image: evt?.data.image_url
     };
 
-    console.log(userData,evt,"both evnt and data")
     await connectDB();
 
     switch (evt?.type) {
